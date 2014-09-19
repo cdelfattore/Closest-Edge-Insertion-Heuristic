@@ -99,28 +99,32 @@ public class ClosestEdge {
 
 		//Start the search
 		finalPath = new ArrayList<Integer>();
-		int initNodeA = findClosestNode(1);
-		int initNodeB = findShortestPath(1,initNodeA);
-		System.out.println(initNodeA);
-		System.out.println(initNodeB);
+		int inputNode = Integer.parseInt(args[1]);
+		int initNodeA = findClosestNode(inputNode);
+		//int initNodeB = findShortestPath(1,initNodeA);
+		//System.out.println(initNodeA);
+		//System.out.println(initNodeB);
 		
-		finalPath.add(1);
+		finalPath.add(inputNode);
 		finalPath.add(initNodeA);
 		//finalPath.add(initNodeB);
-		System.out.println(1 + "-" + initNodeA);
+		//System.out.println(inputNode + "-" + initNodeA);
 
 
 		//System.out.println( finalPath.get(finalPath.size()-3)  + "-" + finalPath.get(finalPath.size()-2) + "-" + finalPath.get(finalPath.size()-1));
-		while(finalPath.size() < 40){
+		while(finalPath.size() < edgeLengths.get(1).size()){
 			int tempShortest = findShortestPath(finalPath.get(finalPath.size()-2),finalPath.get(finalPath.size()-1));
 			if(tempShortest != -1){
 				finalPath.add( finalPath.size()-1, tempShortest);
 			}
-			for(Integer i : finalPath){
+			/*for(Integer i : finalPath){
 				System.out.print(i + "-");
 			}
-			System.out.println();
+			System.out.println();*/
 		}
+
+		System.out.println(calculateAllEdges());
+
 	}
 
 	//Method to compute distance
@@ -129,24 +133,6 @@ public class ClosestEdge {
 	public static double computeDistance(Point a, Point b){
 		return Math.sqrt( ((a.x - b.x) * (a.x - b.x )) + ((a.y - b.y ) * (a.y - b.y ) ) );
 	}
-
-	//will need an array of already visited nodes
-	
-	/*public static int findClosetsEdge(int n) {
-		int shortestPoint = -1;
-		double shortestDistance = Double.MAX_VALUE;
-		for(Point p : points){
-			if(p.name == n || visited.contains(p.name)) continue;
-			double dis = computeDistance(points.get(n),points.get(p.name));
-			//edgeMap.put(p.name,dis);
-			if(dis < shortestDistance){
-				shortestPoint = p.name;
-				shortestDistance = dis;
-				visited.add(shortestPoint);
-			}
-		}
-		return shortestPoint;
-	}*/
 
 	//used when finding the first smallest edge in the graph
 	public static int findClosestNode(int node){
@@ -175,6 +161,21 @@ public class ClosestEdge {
 			}
 		}
 		return sNode;
+	}
+
+	public static Double calculateAllEdges(){
+		double totalDistance = 0.0;
+		for(int i = 0;i < finalPath.size();i++){
+			if(i == 0) continue;
+			else {
+				totalDistance += edgeLengths.get(finalPath.get(i-1)).get(finalPath.get(i));
+			}
+		}
+		//need to calculate distance from the first node to the last node
+		totalDistance += edgeLengths.get(finalPath.get(finalPath.size()-1)).get(finalPath.get(0));
+
+		//return the total distance for the path
+		return totalDistance;
 	}
 
 
