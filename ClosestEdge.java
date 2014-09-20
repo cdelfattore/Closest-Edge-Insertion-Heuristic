@@ -108,7 +108,7 @@ public class ClosestEdge {
 		finalPath.add(inputNode);
 		finalPath.add(initNodeA);
 		//finalPath.add(initNodeB);
-		System.out.println(inputNode + "-" + initNodeA);
+		//System.out.println(inputNode + "-" + initNodeA);
 
 
 		//System.out.println( finalPath.get(finalPath.size()-3)  + "-" + finalPath.get(finalPath.size()-2) + "-" + finalPath.get(finalPath.size()-1));
@@ -132,11 +132,16 @@ public class ClosestEdge {
 				finalPath.add( tempShortest[2], tempShortest[0]);
 				//finalPath.add(tempShortest);
 			}
-			for(Integer i : finalPath){
+			
+			/*for(Integer i : finalPath){
 				System.out.print(i + "-");
 			}
-			System.out.println();
+			System.out.println();*/
 		}
+		/*for(Integer i : finalPath){
+				System.out.print(i + "-");
+			}
+			System.out.println();*/
 		System.out.println(calculateAllEdges());
 
 	}
@@ -188,7 +193,9 @@ public class ClosestEdge {
 		int[] c = new int[3];
 		for(int j = 0; j < finalPath.size(); j++) {
 			Result res = new Result();
-			if(j+1>=finalPath.size()){
+			//System.out.print(j + " ");
+			if(j+1==finalPath.size()){
+				//System.out.println("here");
 				res = findShortestPath(finalPath.get(j),finalPath.get(0));	
 			}
 			else {
@@ -215,11 +222,11 @@ public class ClosestEdge {
 			else {
 				double temp = edgeLengths.get(finalPath.get(i-1)).get(finalPath.get(i));
 				totalDistance += temp;
-				System.out.println(finalPath.get(i-1) + " " + finalPath.get(i) + " Distance: " + temp);
+				//System.out.println(finalPath.get(i-1) + " " + finalPath.get(i) + " Distance: " + temp);
 			}
 		}
 		//need to calculate distance from the first node to the last node
-		System.out.println(finalPath.get(finalPath.size()-1) + " " + finalPath.get(0) + " Distance: " + edgeLengths.get(finalPath.get(finalPath.size()-1)).get(finalPath.get(0)) );
+		//System.out.println(finalPath.get(finalPath.size()-1) + " " + finalPath.get(0) + " Distance: " + edgeLengths.get(finalPath.get(finalPath.size()-1)).get(finalPath.get(0)) );
 		totalDistance += edgeLengths.get(finalPath.get(finalPath.size()-1)).get(finalPath.get(0));
 
 		//return the total distance for the path
