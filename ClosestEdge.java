@@ -108,21 +108,35 @@ public class ClosestEdge {
 		finalPath.add(inputNode);
 		finalPath.add(initNodeA);
 		//finalPath.add(initNodeB);
-		//System.out.println(inputNode + "-" + initNodeA);
+		System.out.println(inputNode + "-" + initNodeA);
 
 
 		//System.out.println( finalPath.get(finalPath.size()-3)  + "-" + finalPath.get(finalPath.size()-2) + "-" + finalPath.get(finalPath.size()-1));
-		while(finalPath.size() < edgeLengths.get(1).size()){
-			int tempShortest = findShortestPath(finalPath.get(finalPath.size()-2),finalPath.get(finalPath.size()-1));
+		//while(finalPath.size() < 5/*edgeLengths.get(1).size()*/){
+			/*int tempShortest = findShortestPath(finalPath.get(finalPath.size()-2),finalPath.get(finalPath.size()-1));
 			if(tempShortest != -1){
 				finalPath.add( finalPath.size()-1, tempShortest);
+				//finalPath.add(tempShortest);
 			}
-			/*for(Integer i : finalPath){
+			for(Integer i : finalPath){
 				System.out.print(i + "-");
 			}
-			System.out.println();*/
+			System.out.println();
 		}
 
+		System.out.println(calculateAllEdges());*/
+
+		while(finalPath.size() < edgeLengths.get(1).size()){
+			int[] tempShortest = findShortestPath();
+			if(tempShortest[0] != -1){
+				finalPath.add( tempShortest[2], tempShortest[0]);
+				//finalPath.add(tempShortest);
+			}
+			for(Integer i : finalPath){
+				System.out.print(i + "-");
+			}
+			System.out.println();
+		}
 		System.out.println(calculateAllEdges());
 
 	}
@@ -150,17 +164,48 @@ public class ClosestEdge {
 	}
 
 	//find the node with the shortest combined distance
-	public static int findShortestPath(int a, int b){
+	public static Result findShortestPath(int a, int b){
 		int sNode = -1; //the node that has the shortest combined path from both nodes
 		Double sDistance = Double.MAX_VALUE;
+		int nodeFrom, nodeTo;
 		for (int i = 1;i <=  edgeLengths.get(a).size(); i++ ) {
 			Double tempDistance = edgeLengths.get(a).get(i) + edgeLengths.get(b).get(i);
 			if(sDistance > tempDistance && !finalPath.contains(i)){
 				sNode = i;
 				sDistance = tempDistance;
+				nodeFrom = a;
+				nodeTo = b;
 			}
 		}
-		return sNode;
+
+		return new Result(sNode,sDistance,a,b);
+	}
+
+	//find the node with the shortest combined distance
+	public static int[] findShortestPath(){
+		double shortestPath = Double.MAX_VALUE;
+		int shortPathNode = -1;
+		int[] c = new int[3];
+		for(int j = 0; j < finalPath.size(); j++) {
+			Result res = new Result();
+			if(j+1>=finalPath.size()){
+				res = findShortestPath(finalPath.get(j),finalPath.get(0));	
+			}
+			else {
+				res = findShortestPath(finalPath.get(j),finalPath.get(j+1));	
+			}
+			if(res.dis < shortestPath){
+				shortestPath = res.dis;
+				shortPathNode = res.node;
+				c[0] = shortPathNode;
+				c[1] = j;
+				c[2] = j+1;
+
+				//System.out.println(res.dis + " " + res.node + " " + res.nodeFrom + " " + res.nodeTo) ;
+			}
+		}
+		
+		return c;
 	}
 
 	public static Double calculateAllEdges(){
@@ -168,10 +213,13 @@ public class ClosestEdge {
 		for(int i = 0;i < finalPath.size();i++){
 			if(i == 0) continue;
 			else {
-				totalDistance += edgeLengths.get(finalPath.get(i-1)).get(finalPath.get(i));
+				double temp = edgeLengths.get(finalPath.get(i-1)).get(finalPath.get(i));
+				totalDistance += temp;
+				System.out.println(finalPath.get(i-1) + " " + finalPath.get(i) + " Distance: " + temp);
 			}
 		}
 		//need to calculate distance from the first node to the last node
+		System.out.println(finalPath.get(finalPath.size()-1) + " " + finalPath.get(0) + " Distance: " + edgeLengths.get(finalPath.get(finalPath.size()-1)).get(finalPath.get(0)) );
 		totalDistance += edgeLengths.get(finalPath.get(finalPath.size()-1)).get(finalPath.get(0));
 
 		//return the total distance for the path
@@ -181,7 +229,22 @@ public class ClosestEdge {
 
 }
 
+class Result {
+	int node, nodeFrom, nodeTo;
+	double dis;
 
+	Result(int a, double b, int nodeFrom, int nodeTo){
+		this.node = a;
+		this.dis = b;
+		this.nodeFrom = nodeFrom;
+		this.nodeTo = nodeTo;
+	}
+	Result(){
+		this.node = 0;
+		this.dis = Double.MAX_VALUE;
+	}
+
+}
 //Object used to represent a single point
 //Point Stores the Name, X and Y Value
 //with methods to retrieve the name, x and y value
