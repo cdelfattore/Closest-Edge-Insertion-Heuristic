@@ -5,11 +5,13 @@
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
+import javax.swing.*;
+import java.awt.*;
 
 public class ClosestEdge {
-	public static Map<Integer,Point> points;
+	public static Map<Integer,PointA> points;
 	//public static Map<Integer,Double> edgeMap;
-	public static List<Integer> finalPath;
+	public static ArrayList<Integer> finalPath;
 	public static Map<Integer,Map<Integer,Double>> edgeLengths;
 
 	public static void main(String[] args) throws IOException {
@@ -19,7 +21,7 @@ public class ClosestEdge {
 		//The point class is defined at the bottom of this file.
 		//The point class is a basic class to store information about a point.
 		//The Below list is used to store the point information from the input file
-		points = new HashMap<Integer,Point>();
+		points = new HashMap<Integer,PointA>();
 
 		//BufferedReader used to read input from a file
 		BufferedReader reader = new BufferedReader(new FileReader(filename));
@@ -38,19 +40,10 @@ public class ClosestEdge {
 			Matcher m = r.matcher(value);
 			if(m.find()) {
 				//add the point to the List of points
-				Point p = new Point(Integer.parseInt(value.split(" ")[0]), Double.parseDouble(value.split(" ")[1]), Double.parseDouble(value.split(" ")[2]));
+				PointA p = new PointA(Integer.parseInt(value.split(" ")[0]), Double.parseDouble(value.split(" ")[1]), Double.parseDouble(value.split(" ")[2]));
 				points.put(p.name,p);
 			}
 		}
-		/*for(int i = 0;i<points.size();i++){
-			System.out.println("i: " + i + " name: " + points.get(i).name + " " + points.get(i).x + " " + points.get(i).y);
-		}*/
-
-		/*for(Integer a : points.keySet()){
-			System.out.println(a + " " + points.get(a).x + " " + points.get(a).y);
-		}
-
-		System.out.println(points.size());*/
 
 		edgeLengths = new HashMap<Integer,Map<Integer,Double>>();
 
@@ -68,88 +61,50 @@ public class ClosestEdge {
 			edgeLengths.put(a,listDoubles);
 		}
 
-		/*for (Integer i : edgeLengths.keySet()) {
-			for(Double a : edgeLengths.get(i)) {
-				System.out.println(i + " " + a);
-			}
-		}*/
-
-		/*for (Integer i : edgeLengths.keySet()) {
-			for (int a = 1;a <=  edgeLengths.get(i).size(); a++ ) {
-				System.out.println(i + "-" + a + " " + edgeLengths.get(i).get(a));	
-			}
-		}*/
-
-		//edgeMap = new HashMap<Integer,Double>();
-
-
-		/*for(Integer a : edgeMap.keySet()){
-			System.out.println(a + " " + edgeMap.get(a));
-		}*/
-
-		/*visited = new ArrayList<Integer>();
-		
-		for(int i = 1;i < points.size(); i++){
-			findClosetsEdge(i);
-		}
-		for(Integer i : visited){
-			if (i == 0) continue;
-			System.out.print(i + "-");
-		}*/
-
 		//Start the search
 		finalPath = new ArrayList<Integer>();
-		int inputNode = Integer.parseInt(args[1]);
-		int initNodeA = findClosestNode(inputNode);
-		//int initNodeB = findShortestPath(1,initNodeA);
-		//System.out.println(initNodeA);
-		//System.out.println(initNodeB);
-		
-		finalPath.add(inputNode);
-		finalPath.add(initNodeA);
-		//finalPath.add(initNodeB);
-		//System.out.println(inputNode + "-" + initNodeA);
+		Map<Integer,Double> finalPathDistances = new HashMap<Integer,Double>();
+		Map<Integer,String> finalPathString = new HashMap<Integer,String>();
 
+		for(Integer b : points.keySet()) {
+			int inputNode = b;
+			int initNodeA = findClosestNode(inputNode);
+			finalPath.add(inputNode);
+			finalPath.add(initNodeA);
 
-		//System.out.println( finalPath.get(finalPath.size()-3)  + "-" + finalPath.get(finalPath.size()-2) + "-" + finalPath.get(finalPath.size()-1));
-		//while(finalPath.size() < 5/*edgeLengths.get(1).size()*/){
-			/*int tempShortest = findShortestPath(finalPath.get(finalPath.size()-2),finalPath.get(finalPath.size()-1));
-			if(tempShortest != -1){
-				finalPath.add( finalPath.size()-1, tempShortest);
-				//finalPath.add(tempShortest);
+			while(finalPath.size() < edgeLengths.get(1).size()){
+				int[] tempShortest = findShortestPath();
+				if(tempShortest[0] != -1){
+					finalPath.add( tempShortest[2], tempShortest[0]);
+					//finalPath.add(tempShortest);
+				}
 			}
+			String path = "";
 			for(Integer i : finalPath){
-				System.out.print(i + "-");
-			}
-			System.out.println();
+					//System.out.print(i + "-");
+					path += i + "-";
+				}
+				//System.out.println(calculateAllEdges());
+				finalPathDistances.put(b,calculateAllEdges());
+				finalPathString.put(b,path);
+				finalPath.clear();
 		}
-
-		System.out.println(calculateAllEdges());*/
-
-		while(finalPath.size() < edgeLengths.get(1).size()){
-			int[] tempShortest = findShortestPath();
-			if(tempShortest[0] != -1){
-				finalPath.add( tempShortest[2], tempShortest[0]);
-				//finalPath.add(tempShortest);
+		double finalShortest = Double.MAX_VALUE;
+		int finalStartNode = -1;
+		for(Integer k : finalPathDistances.keySet()){
+			if(finalPathDistances.get(k) < finalShortest) {
+				finalShortest = finalPathDistances.get(k);
+				finalStartNode = k;
 			}
-			
-			/*for(Integer i : finalPath){
-				System.out.print(i + "-");
-			}
-			System.out.println();*/
 		}
-		/*for(Integer i : finalPath){
-				System.out.print(i + "-");
-			}
-			System.out.println();*/
-		System.out.println(calculateAllEdges());
+		System.out.println("The distance of the final path is " + finalShortest + " and the path is " + finalPathString.get(finalStartNode) + finalStartNode);
 
 	}
 
 	//Method to compute distance
 	//Takes to points as parameters and computes the distance between them.
 	//Uses distance formula
-	public static double computeDistance(Point a, Point b){
+	public static double computeDistance(PointA a, PointA b){
 		return Math.sqrt( ((a.x - b.x) * (a.x - b.x )) + ((a.y - b.y ) * (a.y - b.y ) ) );
 	}
 
@@ -232,8 +187,6 @@ public class ClosestEdge {
 		//return the total distance for the path
 		return totalDistance;
 	}
-
-
 }
 
 class Result {
@@ -256,11 +209,12 @@ class Result {
 //Point Stores the Name, X and Y Value
 //with methods to retrieve the name, x and y value
 //and a method to set the name.
-class Point {
+//Turns out there is a java class called point
+class PointA {
 	int name;
 	double x, y;
 	//constructor
-	Point(int name, double x, double y) {
+	PointA(int name, double x, double y) {
 		this.name = name;
 		this.x = x;
 		this.y = y;
