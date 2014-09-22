@@ -13,13 +13,13 @@ public class ClosestEdge {
 	//public static Map<Integer,Double> edgeMap;
 	public static ArrayList<Integer> finalPath;
 	public static Map<Integer,Map<Integer,Double>> edgeLengths;
-
+	public static ArrayList<Integer> drawArray;
 	public static void main(String[] args) throws IOException {
 		//Takes the filename as a parameter. File contains points and the x and y cooridnates.
 		String filename = args[0];
 
-		//The point class is defined at the bottom of this file.
-		//The point class is a basic class to store information about a point.
+		//The pointa class is defined at the bottom of this file.
+		//The pointa class is a basic class to store information about a point.
 		//The Below list is used to store the point information from the input file
 		points = new HashMap<Integer,PointA>();
 
@@ -45,8 +45,12 @@ public class ClosestEdge {
 			}
 		}
 
+		//Map to store the edgeLengths for all of the edges
 		edgeLengths = new HashMap<Integer,Map<Integer,Double>>();
 
+		//Iterate through all of the points
+		//create all the permutaions of edges
+		//find their distance
 		for(Integer a : points.keySet()){
 			//System.out.println(a + " " + points.get(a).x + " " + points.get(a).y);
 			Map<Integer,Double> listDoubles = new HashMap<Integer,Double>();
@@ -61,16 +65,22 @@ public class ClosestEdge {
 			edgeLengths.put(a,listDoubles);
 		}
 
-		//Start the search
+		//fianlPath is the arraylist that will store the order of the path as it is being built
 		finalPath = new ArrayList<Integer>();
+		//map to store the start node int and the double of the path length for that start node
 		Map<Integer,Double> finalPathDistances = new HashMap<Integer,Double>();
+		//map to store the start node int and the string of the hamiltonian path
 		Map<Integer,String> finalPathString = new HashMap<Integer,String>();
 
+		//b is the start node int for the path
+		//iterate through all of the points from the input file
 		for(Integer b : points.keySet()) {
 			int inputNode = b;
 			int initNodeA = findClosestNode(inputNode);
 			finalPath.add(inputNode);
 			finalPath.add(initNodeA);
+			/*System.out.println();
+			System.out.println(inputNode + "-" + initNodeA);*/
 
 			while(finalPath.size() < edgeLengths.get(1).size()){
 				int[] tempShortest = findShortestPath();
@@ -78,7 +88,12 @@ public class ClosestEdge {
 					finalPath.add( tempShortest[2], tempShortest[0]);
 					//finalPath.add(tempShortest);
 				}
+				/*for(Integer i : finalPath){
+					System.out.print(i + "-");
+				}
+				System.out.println();*/
 			}
+			
 			String path = "";
 			for(Integer i : finalPath){
 					//System.out.print(i + "-");
@@ -88,7 +103,10 @@ public class ClosestEdge {
 				finalPathDistances.put(b,calculateAllEdges());
 				finalPathString.put(b,path);
 				finalPath.clear();
+				//System.out.println();
 		}
+
+		//Find the shortest path out of all of the starting points
 		double finalShortest = Double.MAX_VALUE;
 		int finalStartNode = -1;
 		for(Integer k : finalPathDistances.keySet()){
@@ -97,9 +115,48 @@ public class ClosestEdge {
 				finalStartNode = k;
 			}
 		}
-		System.out.println("The distance of the final path is " + finalShortest + " and the path is " + finalPathString.get(finalStartNode) + finalStartNode);
-
+		drawArray = new ArrayList<Integer>();
+		//System.out.println("The distance of the final path is " + finalShortest + " and the path is " + finalPathString.get(finalStartNode) + finalStartNode);
+		for(String s : finalPathString.get(finalStartNode).split("-")){
+			//System.out.println(s);
+			drawArray.add(Integer.parseInt(s));
+		}
+		
+		JFrame frame = new JFrame();
+		frame.setSize(600,600);
+		frame.setLocationRelativeTo(null);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		
+		frame.add(new MyPanel());
+		frame.setVisible(true);
 	}
+
+	public static class MyPanel extends JPanel{
+		public void paint(Graphics g) {
+			Graphics2D g2 = (Graphics2D)g;
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+			RenderingHints.VALUE_ANTIALIAS_ON);
+			/*Font font = new Font("Serif", Font.PLAIN, 96);
+			g2.setFont(font);
+			g2.drawString("Text", 40, 120);*/
+			for(int i=1;i<points.size();i++){
+				System.out.println(i+": " + (int)points.get(drawArray.get(i)).x + " " + (int)points.get(drawArray.get(i)).y);
+				if(i+1>=points.size()){
+					g2.drawLine( (int)points.get(drawArray.get(0)).x * 4, (int)points.get(drawArray.get(0)).y * 4,(int)points.get(drawArray.get(i)).x * 4,(int)points.get(drawArray.get(i)).x * 4);	
+				}
+				else {
+					g2.drawLine( (int)points.get(drawArray.get(i)).x * 4, (int)points.get(drawArray.get(i)).y * 4,(int)points.get(drawArray.get(i+1)).x * 4,(int)points.get(drawArray.get(i+1)).x * 4);
+				}
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e){}
+			}
+			
+
+		}	
+	}
+	
 
 	//Method to compute distance
 	//Takes to points as parameters and computes the distance between them.
@@ -126,8 +183,8 @@ public class ClosestEdge {
 	//find the node with the shortest combined distance
 	public static Result findShortestPath(int a, int b){
 		int sNode = -1; //the node that has the shortest combined path from both nodes
-		Double sDistance = Double.MAX_VALUE;
-		int nodeFrom, nodeTo;
+		Double sDistance = Double.MAX_VALUE; //set the intial distance to the max distance
+		int nodeFrom, nodeTo; //shortest nodeFrom and nodeTo
 		for (int i = 1;i <=  edgeLengths.get(a).size(); i++ ) {
 			Double tempDistance = edgeLengths.get(a).get(i) + edgeLengths.get(b).get(i);
 			if(sDistance > tempDistance && !finalPath.contains(i)){
