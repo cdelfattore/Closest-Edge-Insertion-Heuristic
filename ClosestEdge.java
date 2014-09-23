@@ -115,19 +115,22 @@ public class ClosestEdge {
 				finalStartNode = k;
 			}
 		}
+		System.out.println("The distance of the final path is " + finalShortest + " and the path is " + finalPathString.get(finalStartNode) + finalStartNode);
 		drawArray = new ArrayList<Integer>();
-		//System.out.println("The distance of the final path is " + finalShortest + " and the path is " + finalPathString.get(finalStartNode) + finalStartNode);
+			
 		for(String s : finalPathString.get(finalStartNode).split("-")){
 			//System.out.println(s);
 			drawArray.add(Integer.parseInt(s));
 		}
 		
+		//Create the JFrame that will display the points and the edges
 		JFrame frame = new JFrame();
 		frame.setSize(600,600);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setTitle("Hamiltonian Path");
 		
-		
+		//add the custom JPanel that will display the points and edges.
 		frame.add(new MyPanel());
 		frame.setVisible(true);
 	}
@@ -135,25 +138,22 @@ public class ClosestEdge {
 	public static class MyPanel extends JPanel{
 		public void paint(Graphics g) {
 			Graphics2D g2 = (Graphics2D)g;
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-			RenderingHints.VALUE_ANTIALIAS_ON);
-			/*Font font = new Font("Serif", Font.PLAIN, 96);
-			g2.setFont(font);
-			g2.drawString("Text", 40, 120);*/
-			for(int i=1;i<points.size();i++){
-				System.out.println(i+": " + (int)points.get(drawArray.get(i)).x + " " + (int)points.get(drawArray.get(i)).y);
+
+			for(int i=0;i< points.size();i++){
+				//System.out.println(drawArray.get(i)+": " + (int)points.get(drawArray.get(i)).x + " " + (int)points.get(drawArray.get(i)).y);
 				if(i+1>=points.size()){
-					g2.drawLine( (int)points.get(drawArray.get(0)).x * 4, (int)points.get(drawArray.get(0)).y * 4,(int)points.get(drawArray.get(i)).x * 4,(int)points.get(drawArray.get(i)).x * 4);	
+					//System.out.println("here");
+					//System.out.println((int)points.get(drawArray.get(i)).x + " " + (int)points.get(drawArray.get(i)).y + " " + (int)points.get(drawArray.get(0)).x + " " + (int)points.get(drawArray.get(0)).y);
+					//g2.drawLine((int)points.get(drawArray.get(i)).x * 4,(int)points.get(drawArray.get(i)).x * 4, (int)points.get(drawArray.get(0)).x * 4, (int)points.get(drawArray.get(0)).y * 4);	
+					g2.drawOval((int)points.get(drawArray.get(drawArray.size()-1)).x *4, (int)points.get(drawArray.get(drawArray.size()-1)).y *4, 5, 5);
+					g2.drawLine( (int)points.get(drawArray.get(0)).x *4, (int)points.get(drawArray.get(0)).y*4,(int)points.get(drawArray.get(drawArray.size()-1)).x*4,(int)points.get(drawArray.get(drawArray.size()-1)).y*4);
 				}
 				else {
-					g2.drawLine( (int)points.get(drawArray.get(i)).x * 4, (int)points.get(drawArray.get(i)).y * 4,(int)points.get(drawArray.get(i+1)).x * 4,(int)points.get(drawArray.get(i+1)).x * 4);
+					//System.out.println((int)points.get(drawArray.get(i)).x + " " + (int)points.get(drawArray.get(i)).y + " " + (int)points.get(drawArray.get(i+1)).x + " " + (int)points.get(drawArray.get(i+1)).y);
+					g2.drawOval((int)points.get(drawArray.get(i)).x *4, (int)points.get(drawArray.get(i)).y *4, 5, 5);
+					g2.drawLine( (int)points.get(drawArray.get(i)).x *4, (int)points.get(drawArray.get(i)).y*4,(int)points.get(drawArray.get(i+1)).x*4,(int)points.get(drawArray.get(i+1)).y*4);
 				}
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException e){}
 			}
-			
-
 		}	
 	}
 	
