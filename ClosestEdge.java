@@ -1,6 +1,7 @@
 /* Assignment: Project 3 - TSP – Closest Edge Insertion Heuristic
 ** Name: Chris Del Fattore
 ** Email: crdelf01@cardmail.louisville.edu
+** Description: Implement the closest edge insertion heuritic to find a hamiltonian path.
 */
 import java.io.*;
 import java.util.*;
@@ -82,7 +83,9 @@ public class ClosestEdge {
 			/*System.out.println();
 			System.out.println(inputNode + "-" + initNodeA);*/
 
+			//algorithm start
 			while(finalPath.size() < edgeLengths.get(1).size()){
+				//find the node with the shortest path
 				int[] tempShortest = findShortestPath();
 				if(tempShortest[0] != -1){
 					finalPath.add( tempShortest[2], tempShortest[0]);
@@ -94,11 +97,13 @@ public class ClosestEdge {
 				System.out.println();*/
 			}
 			
+			//output the finall path to a map, will iterate over it to 
+			//find the shortest path between all of the starting points
 			String path = "";
 			for(Integer i : finalPath){
 					//System.out.print(i + "-");
 					path += i + "-";
-				}
+			}
 				//System.out.println(calculateAllEdges());
 				finalPathDistances.put(b,calculateAllEdges());
 				finalPathString.put(b,path);
@@ -117,7 +122,7 @@ public class ClosestEdge {
 		}
 		System.out.println("The distance of the final path is " + finalShortest + " and the path is " + finalPathString.get(finalStartNode) + finalStartNode);
 		drawArray = new ArrayList<Integer>();
-			
+		//Parse the final path string into an array in order to print them in the jFrame.	
 		for(String s : finalPathString.get(finalStartNode).split("-")){
 			//System.out.println(s);
 			drawArray.add(Integer.parseInt(s));
@@ -135,6 +140,7 @@ public class ClosestEdge {
 		frame.setVisible(true);
 	}
 
+	//mypanel class will display the points on a jframe
 	public static class MyPanel extends JPanel{
 		public void paint(Graphics g) {
 			Graphics2D g2 = (Graphics2D)g;
@@ -145,11 +151,13 @@ public class ClosestEdge {
 					//System.out.println("here");
 					//System.out.println((int)points.get(drawArray.get(i)).x + " " + (int)points.get(drawArray.get(i)).y + " " + (int)points.get(drawArray.get(0)).x + " " + (int)points.get(drawArray.get(0)).y);
 					//g2.drawLine((int)points.get(drawArray.get(i)).x * 4,(int)points.get(drawArray.get(i)).x * 4, (int)points.get(drawArray.get(0)).x * 4, (int)points.get(drawArray.get(0)).y * 4);	
+					//draw the point and the line
 					g2.drawOval((int)points.get(drawArray.get(drawArray.size()-1)).x *4, (int)points.get(drawArray.get(drawArray.size()-1)).y *4, 5, 5);
 					g2.drawLine( (int)points.get(drawArray.get(0)).x *4, (int)points.get(drawArray.get(0)).y*4,(int)points.get(drawArray.get(drawArray.size()-1)).x*4,(int)points.get(drawArray.get(drawArray.size()-1)).y*4);
 				}
 				else {
 					//System.out.println((int)points.get(drawArray.get(i)).x + " " + (int)points.get(drawArray.get(i)).y + " " + (int)points.get(drawArray.get(i+1)).x + " " + (int)points.get(drawArray.get(i+1)).y);
+					//draw the point and the line
 					g2.drawOval((int)points.get(drawArray.get(i)).x *4, (int)points.get(drawArray.get(i)).y *4, 5, 5);
 					g2.drawLine( (int)points.get(drawArray.get(i)).x *4, (int)points.get(drawArray.get(i)).y*4,(int)points.get(drawArray.get(i+1)).x*4,(int)points.get(drawArray.get(i+1)).y*4);
 				}
@@ -203,6 +211,7 @@ public class ClosestEdge {
 		double shortestPath = Double.MAX_VALUE;
 		int shortPathNode = -1;
 		int[] c = new int[3];
+		//iterate through all of the edges in the list
 		for(int j = 0; j < finalPath.size(); j++) {
 			Result res = new Result();
 			//System.out.print(j + " ");
@@ -213,6 +222,7 @@ public class ClosestEdge {
 			else {
 				res = findShortestPath(finalPath.get(j),finalPath.get(j+1));	
 			}
+			//check if new result is the shortest
 			if(res.dis < shortestPath){
 				shortestPath = res.dis;
 				shortPathNode = res.node;
@@ -227,6 +237,8 @@ public class ClosestEdge {
 		return c;
 	}
 
+	//method used to add the distances up for all of the edges
+	//used at the end of the program
 	public static Double calculateAllEdges(){
 		double totalDistance = 0.0;
 		for(int i = 0;i < finalPath.size();i++){
@@ -246,6 +258,8 @@ public class ClosestEdge {
 	}
 }
 
+//result class will return the edge, point and distance stored in one object
+//
 class Result {
 	int node, nodeFrom, nodeTo;
 	double dis;
